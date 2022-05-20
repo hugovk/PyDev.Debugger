@@ -53,6 +53,8 @@ class PyDBAdditionalThreadInfo(object):
         # of the last request for a given thread and pydev_smart_parent_offset/pydev_smart_child_offset relies on it).
         'pydev_smart_step_into_variants',
         'target_id_to_smart_step_into_variant',
+
+        'pydev_use_scoped_step_frame',
     ]
     # ENDIF
 
@@ -89,6 +91,7 @@ class PyDBAdditionalThreadInfo(object):
         self.pydev_smart_child_offset = -1
         self.pydev_smart_step_into_variants = ()
         self.target_id_to_smart_step_into_variant = {}
+        self.pydev_use_scoped_step_frame = False
 
     def get_topmost_frame(self, thread):
         '''

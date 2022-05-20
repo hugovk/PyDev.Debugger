@@ -2166,6 +2166,19 @@ class PyDB(object):
                 info.pydev_step_cmd = -1
                 info.pydev_state = STATE_RUN
 
+        info.pydev_use_scoped_step_frame = False
+        if info.pydev_step_cmd != -1:
+            # i.e.: We're stepping: check if the stepping should be scoped.
+            print('checking frame', frame)
+            f = frame.f_back
+            while f is not None:
+                if f.f_code.co_name == 'run_code':
+                    info.pydev_use_scoped_step_frame = True
+                    print('scoped step!', f)
+                    break
+
+                f = f.f_back
+
         del frame
         cmd = self.cmd_factory.make_thread_run_message(get_current_thread_id(thread), info.pydev_step_cmd)
         self.writer.add_command(cmd)

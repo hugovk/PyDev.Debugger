@@ -673,7 +673,7 @@ class PyDBFrame:
                     # event == 'call' or event == 'c_XXX'
                     return self.trace_dispatch
 
-            else:
+            else:  # Not coroutine nor generator
                 if event == 'line':
                     is_line = True
                     is_call = False
