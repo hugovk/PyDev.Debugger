@@ -33,6 +33,8 @@ DWORD GetPythonThreadId(PythonVersion version, PyThreadState* curThread) {
         threadId = (DWORD)((PyThreadState_39*)curThread)->thread_id;
     } else if (PyThreadState_310::IsFor(version)) {
         threadId = (DWORD)((PyThreadState_310*)curThread)->thread_id;
+    } else if (PyThreadState_311::IsFor(version)) {
+        threadId = (DWORD)((PyThreadState_311*)curThread)->thread_id;
     }
     return threadId;
 }
@@ -137,7 +139,6 @@ int InternalSetSysTraceFunc(
         // we have to use PyObject_FastCallDictCustom for older versions of CPython (pre 3.7).
         pyObject_FastCallDict = reinterpret_cast<_PyObject_FastCallDict*>(&PyObject_FastCallDictCustom);
     }
-
 
     DEFINE_PROC(pyTraceBack_Here, PyTraceBack_Here*, "PyTraceBack_Here", 540);
     DEFINE_PROC(pyEval_SetTrace, PyEval_SetTrace*, "PyEval_SetTrace", 550);

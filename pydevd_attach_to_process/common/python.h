@@ -119,6 +119,40 @@ public:
     // It has more things, but we're only interested in things up to f_trace.
 };
 
+typedef uint16_t _Py_CODEUNIT;
+
+typedef struct _PyInterpreterFrame311 {
+    /* "Specials" section */
+    PyFunctionObject *f_func; /* Strong reference */
+    PyObject *f_globals; /* Borrowed reference */
+    PyObject *f_builtins; /* Borrowed reference */
+    PyObject *f_locals; /* Strong reference, may be NULL */
+    void *f_code; /* Strong reference */
+    void *frame_obj; /* Strong reference, may be NULL */
+    /* Linkage section */
+    struct _PyInterpreterFrame311 *previous;
+    // NOTE: This is not necessarily the last instruction started in the given
+    // frame. Rather, it is the code unit *prior to* the *next* instruction. For
+    // example, it may be an inline CACHE entry, an instruction we just jumped
+    // over, or (in the case of a newly-created frame) a totally invalid value:
+    _Py_CODEUNIT *prev_instr;
+    int stacktop;     /* Offset of TOS from localsplus  */
+    bool is_entry;  // Whether this is the "root" frame for the current _PyCFrame.
+    char owner;
+    /* Locals and stack */
+    PyObject *localsplus[1];
+} _PyInterpreterFrame311;
+
+// https://github.com/python/cpython/blob/3.11/Include/internal/pycore_frame.h
+class PyFrameObject311 : public PyFrameObject {
+public:
+    PyFrameObject311 *f_back;      /* previous frame, or NULL */
+    void *f_frame; /* points to the frame data */
+    PyObject *f_trace;          /* Trace function */
+    int f_lineno;               /* Current line number. Only valid if non-zero */
+    // It has more things, but we're not interested on those.
+};
+
 
 typedef void (*destructor)(PyObject *);
 
@@ -569,6 +603,60 @@ public:
 
     static bool IsFor(PythonVersion version) {
         return version == PythonVersion_310;
+    }
+};
+
+// i.e.: https://github.com/python/cpython/blob/master/Include/cpython/pystate.h
+class PyThreadState_311 : public PyThreadState {
+public:
+    PyThreadState *prev;
+    PyThreadState *next;
+    PyInterpreterState *interp;
+
+    int _initialized;
+
+    int _static;
+    
+    int recursion_remaining;
+    int recursion_limit;
+    int recursion_headroom; /* Allow 50 more calls to handle any errors. */
+
+    /* 'tracing' keeps track of the execution depth when tracing/profiling.
+       This is to prevent the actual trace/profile code from being recorded in
+       the trace/profile. */
+    int tracing;
+    int tracing_what;
+
+    /* Pointer to current CFrame in the C stack frame of the currently,
+     * or most recently, executing _PyEval_EvalFrameDefault. */
+    CFrame *cframe;
+
+
+    Py_tracefunc c_profilefunc;
+    Py_tracefunc c_tracefunc;
+    PyObject *c_profileobj;
+    PyObject *c_traceobj;
+
+    PyObject *curexc_type;
+    PyObject *curexc_value;
+    PyObject *curexc_traceback;
+
+    _PyErr_StackItem *exc_info;
+
+    PyObject *dict;  /* Stores per-thread state */
+
+    int gilstate_counter;
+
+    PyObject *async_exc; /* Asynchronous exception to raise */
+
+    unsigned long thread_id; /* Thread id where this tstate was created */
+
+    static bool IsFor(int majorVersion, int minorVersion) {
+        return majorVersion == 3 && minorVersion == 11;
+    }
+
+    static bool IsFor(PythonVersion version) {
+        return version == PythonVersion_311;
     }
 };
 

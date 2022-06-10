@@ -240,7 +240,7 @@ def get_python_helper_lib_filename():
 
 
 def _load_python_helper_lib_uncached():
-    if (not IS_CPYTHON or sys.version_info[:2] > (3, 10)
+    if (not IS_CPYTHON or sys.version_info[:2] > (3, 11)
             or hasattr(sys, 'gettotalrefcount') or LOAD_NATIVE_LIB_FLAG in ENV_FALSE_LOWER_VALUES):
         pydev_log.info('Helper lib to set tracing to all threads not loaded.')
         return None
@@ -325,7 +325,7 @@ def set_trace_to_threads(tracing_func, thread_idents=None, create_dummy_thread=T
 
         # Some (ptvsd) tests failed because of this, so, leave it always disabled for now.
         # show_debug_info = 1 if DebugInfoHolder.DEBUG_TRACE_LEVEL >= 1 else 0
-        show_debug_info = 0
+        show_debug_info = 1
 
         # Hack to increase _Py_TracingPossible.
         # See comments on py_custom_pyeval_settrace.hpp

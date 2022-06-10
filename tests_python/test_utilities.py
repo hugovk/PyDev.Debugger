@@ -295,7 +295,9 @@ def _check_tracing_other_threads():
     def tracing_func(frame, event, args):
         return tracing_func
 
+    print('setting')
     assert pydevd_tracing.set_trace_to_threads(tracing_func) == 0
+    print('ok 0')
 
     def check_threads_tracing_func():
         for t in threads:
@@ -306,6 +308,7 @@ def _check_tracing_other_threads():
     wait_for_condition(check_threads_tracing_func)
 
     assert tracing_func == sys.gettrace()
+    print('ok 1')
 
 
 def _build_launch_env():
@@ -366,7 +369,11 @@ def _check_basic_tracing():
         called[0] = called[0] + 1
         return tracing_func
 
+    print('call 1')
+    import sys
+    print(sys)
     assert pydevd_tracing.set_trace_to_threads(tracing_func) == 0
+    print('call 2')
 
     def foo():
         pass
@@ -551,3 +558,12 @@ def test_import_token_from_module():
 
     assert import_attr_from_module('sys.settrace') == sys.settrace
     assert import_attr_from_module('threading.Thread.start') == threading.Thread.start
+
+
+if __name__ == '__main__':
+    try:
+        _check_basic_tracing()
+    except:
+        import traceback;traceback.print_exc()
+        raise
+    # _check_tracing_other_threads()
